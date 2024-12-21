@@ -72,22 +72,31 @@ yarn build
 **Назначение**: управление данными приложения, работа с данными сервера и локальными данными.
 
 **Поля**:
-
-- `serverUrl: string` - базовый URL сервера для API.
 - `userData: ContactData | null` - данные пользователя для сохранения и валидации.
-- `basket: BasketItem[]` - текущие товары в корзине.
+- `basket: Product[]` - текущие товары в корзине.
+- `products: Product[]` — список товаров, доступных в магазине.
 
 **Конструктор**: принимает объект конфигурации с параметрами сервера.
 
 **Методы**:
-- `getProducts()`: получает список товаров с сервера.
-- `getProductDetails(id: number)`: получает данные о конкретном товаре.
+- `setProducts(products: Product[])`: сохраняет список товаров.
 - `addToBasket(productId: number)`: добавляет товар в корзину.
 - `removeFromBasket(productId: number)`: удаляет товар из корзины.
-- `submitOrder(orderData: OrderData)`: отправляет данные заказа на сервер.
 - `saveUserData(userData: ContactData): void` - сохраняет данные пользователя.
 - `validateUserData(): boolean` - проверяет корректность данных пользователя.
 - `getBasketItems(): BasketItem[]` - возвращает текущий список товаров в корзине.
+---
+
+### Класс `ApiClient`
+**Назначение**: управление запросами к серверу.
+
+**Поля**
+- `serverUrl: string` - базовый URL сервера для API.
+
+**Методы**
+- `fetchProducts()`: загружает список товаров.
+- `fetchProductDetails(id: number)`: загружает информацию о конкретном товаре.
+- `sendOrder(orderData: OrderData)`: отправляет заказ на сервер.
 ---
 
 #### Класс `EventEmitter`
