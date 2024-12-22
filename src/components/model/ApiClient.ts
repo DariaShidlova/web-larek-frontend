@@ -1,7 +1,7 @@
 import { OrderData } from "../../types";
 
 export class ApiClient {
-    constructor(private serverUrl: string) {}
+    constructor(private serverUrl: string = process.env.API_ORIGIN || 'https://default-api-url.com') {}
 
     async fetchProducts() {
         const response = await fetch(`${this.serverUrl}/products`);
