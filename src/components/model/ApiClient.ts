@@ -1,24 +1,27 @@
-import { OrderData } from "../../types";
+import { OrderData, OrderDataResult, Product, IApiClient } from '../../types';
+import { ApiListResponse, Api } from  '../base/api'
 
-export class ApiClient {
-    constructor(private serverUrl: string = process.env.API_ORIGIN || 'https://default-api-url.com') {}
 
-    async fetchProducts() {
-        const response = await fetch(`${this.serverUrl}/products`);
-        return response.json();
+export class ApiClient extends Api {
+    cdn: string;
+    items: Product[];
+
+    constructor(cdn: string, baseUrl: string, options?: RequestInit) {
+        super(baseUrl, options);
+        this.cdn = cdn;
     }
+    
+  fetchProducts(): Promise<Product[]> {
+    return this.get('/product').then((data: ApiListResponse<Product>) =>
+      data.items.map((item) => ({
+        ...item,
+        image: this.cdn + item.image,
+      }))
+    );
+  }
 
-    async fetchProductDetails(id: number) {
-        const response = await fetch(`${this.serverUrl}/products/${id}`);
-        return response.json();
-    }
-
-    async sendOrder(orderData: OrderData) {
-        const response = await fetch(`${this.serverUrl}/orders`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData),
-        });
-        return response.json();
-    }
+  postOrderLot(order: OrderData): Promise<OrderDataResult> {
+    return this.post(`/order`, order).then((data: OrderDataResult) => data);
+  }
 }
+

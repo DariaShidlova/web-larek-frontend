@@ -1,34 +1,45 @@
-import { Component } from "./Component";
+import { IEvents } from "../base/events";
+import { ensureElement, ensureAllElements, cloneTemplate } from "../../utils/utils";
+import { IContacts } from "../../types";
 
-export class Contacts extends Component {
-  render(): void {
-      throw new Error("Method not implemented.");
+export class Contacts implements IContacts {
+  contactElement: HTMLElement;
+  inputAll: HTMLInputElement[];
+  buttonSubmit: HTMLButtonElement;
+  formErrors: HTMLElement;  
+
+  constructor(template: HTMLTemplateElement, protected events: IEvents) {
+    // Клонируем шаблон формы и ищем все необходимые элементы
+    this.contactElement = cloneTemplate(template);
+    this.inputAll = ensureAllElements('.form__input', this.contactElement) as HTMLInputElement[];
+    this.buttonSubmit = ensureElement('.button', this.contactElement) as HTMLButtonElement;
+    this.formErrors = ensureElement('.form__errors', this.contactElement);
+
+    // Добавляем обработчик на изменения ввода
+    this.inputAll.forEach(input => {
+      input.addEventListener('input', (event) => {
+        const target = event.target as HTMLInputElement;
+        const field = target.name;
+        const value = target.value;
+
+        this.events.emit(`contacts:changeInput`, { field: target.name, value: target.value });
+      });
+    });
+
+    // Обработчик отправки формы
+    this.contactElement.addEventListener('submit', (event: Event) => {
+      event.preventDefault();  // Останавливаем стандартную отправку формы
+      this.events.emit('success:open');
+    });
   }
-  private fields: { email: HTMLInputElement; phone: HTMLInputElement };
 
-  constructor(element: HTMLElement) {
-    super(element);
-    this.fields = {
-      email: this.element.querySelector("[name='email']") as HTMLInputElement,
-      phone: this.element.querySelector("[name='phone']") as HTMLInputElement,
-    };
+  // Сеттер для кнопки отправки формы, управляет её состоянием
+  set validateContacts(value: boolean) {
+    this.buttonSubmit.disabled = !value;
   }
 
-  validateContacts(): boolean {
-    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.fields.email.value);
-    const phoneValid = /^\+?\d{10,15}$/.test(this.fields.phone.value);
-    return emailValid && phoneValid;
-  }
-
-  getContactData() {
-    return {
-      email: this.fields.email.value,
-      phone: this.fields.phone.value,
-    };
-  }
-
-  onChange(callback: (data: { email: string; phone: string }) => void) {
-    this.fields.email.addEventListener("input", () => callback(this.getContactData()));
-    this.fields.phone.addEventListener("input", () => callback(this.getContactData()));
+  // Метод для отображения формы
+  render(): HTMLElement {
+    return this.contactElement;
   }
 }

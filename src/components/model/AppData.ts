@@ -1,44 +1,26 @@
-import { ContactData, Product } from '../../types';
-import { EventEmitter } from './EventEmitter';
+import { Product, IAppData } from "../../types";
+import { IEvents } from "../base/events";
 
-export class AppData extends EventEmitter {
-    private basket: Product[] = [];
-    private products: Product[] = [];
-    private userData: ContactData | null = null;
 
-    setProducts(products: Product[]) {
-        this.products = products;
-        this.emit('productsUpdated', products);
-    }
+export class AppData implements IAppData {
+  protected _productCards: Product[];
+  selectedСard: Product;
 
-    addToBasket(productId: number) {
-        const product = this.products.find(p => p.id === productId);
-        if (product) {
-            this.basket.push(product);
-            this.emit('basketUpdated', this.basket);
-        }
-    }
+  constructor(protected events: IEvents) {
+    this._productCards = []
+  }
 
-    removeFromBasket(productId: number) {
-        this.basket = this.basket.filter(p => p.id !== productId);
-        this.emit('basketUpdated', this.basket);
-    }
+  set productCards(data: Product[]) {
+    this._productCards = data;
+    this.events.emit('productCards:receive');
+  }
 
-    saveUserData(userData: ContactData) {
-        this.userData = userData;
-        this.emit('userDataSaved', userData);
-    }
+  get productCards() {
+    return this._productCards;
+  }
 
-    validateUserData(): boolean {
-        if (!this.userData) return false;
-        const { email, phone } = this.userData;
-        return !!email && !!phone;
-    }
-
-    getBasketItems() {
-        return this.basket.map(product => ({
-            product, 
-            quantity: 1, 
-        }));
-    }
+  setPreview(item: Product) {
+    this.selectedСard = item;
+    this.events.emit('modalCard:open', item)
+  }
 }

@@ -1,85 +1,142 @@
 // Интерфейс для описания товара
 export interface Product {
-    id: number;
-    name: string;
-    description: string;
-    price: number;
-    category: string;
-    imageUrl: string;
+    id: string; //id товара
+    title: string; //Название товара
+    description: string; //Описание товара
+    price: number | null; // Цена товара
+    category: string; //Категория товара
+    image: string; // изображение товара
+}
+//Интерфейс описывает форму заказа
+export interface OrderData {
+    payment?: string;
+    address?: string;
+    phone?: string;
+    email?: string;
+    total?: number;
+    items: string[]
+}
+//Интерфейс описывает объект, который будет отправлен на сервер как данные заказа
+export interface OrderDataServer {
+    payment: string;
+    address: string;
+    phone: string;
+    email: string;
+    total: number;
+    items: string[]
 }
 
-// Интерфейс для описания контактных данных пользователя
-export interface ContactData {
+//Интерфейс описывает ответ сервера, который возвращается после обработки заказа
+export interface OrderDataResult {
+    id: string;
+    total: number
+}
+//ошибка заполнения формы
+export type FormErrors = Partial<Record<keyof OrderDataServer, string>>;
+
+
+//Интерфейс для слоя Model
+export interface IApiClient {
+    cdn: string;
+    items: Product[];
+    fetchProducts(): Promise<Product[]>; // Загружает список товаров
+    sendOrder(orderData: OrderData): Promise<OrderDataResult>; // Отправляет заказ
+}
+
+export interface IAppData {
+    productCards: Product[];
+    selectedСard: Product;
+    setPreview(item: Product): void;
+}
+
+export interface IBasketManager {
+    basket: Product[];
+    getCounter: () => number;
+    getSumAllProducts: () => number;
+    addToBasket(data: Product): void;
+    removeFromBasket(item: Product): void;
+    clearBasket(): void
+}
+
+export interface IOrderFormManager {
+    payment: string;
     email: string;
     phone: string;
+    address: string;
+    total: number;
+    items: string[];
+    setOrderAddress(field: string, value: string): void
+    validateOrder(): boolean;
+    setOrderData(field: string, value: string): void
+    validateContacts(): boolean;
+    returnOrderLot(): object;
 }
 
-// Интерфейс для описания данных заказа
-export interface OrderData {
-    products: Product[]; // Список товаров в заказе
-    address: string;     // Адрес доставки
-    paymentMethod: string; // Метод оплаты
+//Интерфейс для слоя view
+export interface IBasket {
+    basket: HTMLElement;
+    title: HTMLElement;
+    basketList: HTMLElement;
+    button: HTMLButtonElement;
+    basketPrice: HTMLElement;
+    headerBasketButton: HTMLButtonElement;
+    headerBasketCounter: HTMLElement;
+    renderHeaderBasketCounter(value: number): void;
+    renderSumAllProducts(sumAll: number): void;
+    render(): HTMLElement;
 }
 
-// Интерфейс для элемента корзины
-export interface BasketItem {
-    product: Product; // Товар в корзине
-    quantity: number; // Количество товара
+export interface IBasketItem {
+    basketItem: HTMLElement;    
+    index: HTMLElement;         
+    title: HTMLElement;         
+    price: HTMLElement;         
+    buttonDelete: HTMLButtonElement; 
+    render(data: Product, item: number): HTMLElement; 
 }
 
-// Интерфейс для ответа от API, возвращающего список объектов
-export interface ApiListResponse<Type> {
-    total: number; // Общее количество объектов
-    items: Type[]; // Список объектов
+export interface ICard {
+    render(data: Product): HTMLElement;
 }
 
-// Интерфейс для методов API, которые изменяют данные
-export interface ApiPostMethods {
-    method: 'POST' | 'PUT' | 'DELETE';
+export interface ICardPreview {
+    text: HTMLElement;
+    button: HTMLElement;
+    render(data: Product): HTMLElement;
+  }
+
+export interface IActions {
+    onClick: (event: MouseEvent) => void;
 }
 
-// Интерфейс для событий EventEmitter
-export interface EventEmitter {
-    on(event: string, listener: Function): void; // Подписка на событие
-    off(event: string, listener: Function): void; // Отписка от события
-    emit(event: string, data?: any): void; // Генерация события
+export interface IModal {
+    open(): void;
+    close(): void;
+    render(): HTMLElement
 }
 
-// Интерфейс для отображения формы контактов
-export interface ContactForm {
-    validateContacts(data: ContactData): boolean; // Проверяет корректность контактной информации
-    getContactData(): ContactData; // Возвращает введенные контактные данные
+export interface IContacts {
+    contactElement: HTMLElement;
+    inputAll: HTMLInputElement[];
+    buttonSubmit: HTMLButtonElement;
+    formErrors: HTMLElement;
+    // email: string;  
+    // phone: string;  
+    // valid: boolean;
+    render(): HTMLElement;
 }
 
-// Интерфейс для корзины
-export interface BasketView {
-    renderBasketItems(items: Product[]): void; // Отображает список товаров в корзине
-    updateTotalPrice(price: number): void; // Обновляет общую стоимость товаров
-    clearBasket(): void; // Очищает корзину
+export interface IOrder {
+    formOrder: HTMLFormElement;
+    buttonAll: HTMLButtonElement[];
+    paymentSelection: string;
+    formErrors: HTMLElement;
+    render(): HTMLElement;
 }
 
-// Интерфейс для формы оплаты
-export interface PaymentForm {
-    getFormData(): FormData; // Получает данные формы
-    submitForm(): void; // Отправляет данные формы
-    resetForm(): void;  // Очищает поля формы
-}
-
-// Интерфейс для отображения успешного завершения заказа
-export interface SuccessMessage {
-    showSuccessMessage(message: string): void; // Отображает сообщение об успехе
-    hideMessage(): void; // Скрывает сообщение
-}
-
-// Интерфейс для карточки товара
-export interface ProductCard {
-    setProductDetails(details: Product): void; // Устанавливает данные товара
-    onAddToBasket(callback: (productId: number) => void): void; // Обработчик нажатия кнопки "Купить"
-}
-
-// Интерфейс для данных страницы
-export interface PageView {
-    renderPageContent(content: HTMLElement): void; // Отображает основной контент страницы
-    updateBasketCounter(count: number): void; // Обновляет счетчик товаров в корзине
-    scrollToTop(): void; // Прокручивает страницу наверх
+export interface ISuccess {
+    successElement: HTMLElement;
+    messageElement: HTMLElement;
+    button: HTMLButtonElement;
+    render(total: number): HTMLElement;
 }
