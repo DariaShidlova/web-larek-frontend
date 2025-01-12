@@ -11,7 +11,7 @@ export class Basket implements IBasket {
     headerBasketButton: HTMLButtonElement;
     headerBasketCounter: HTMLElement;
 
-    constructor(template: string | HTMLTemplateElement, protected events: IEvents) {
+    constructor(template: string | HTMLTemplateElement, container: HTMLElement, protected events: IEvents) {
         // Клонируем шаблон корзины
         this.basket = cloneTemplate<HTMLElement>(template);
 
@@ -20,8 +20,9 @@ export class Basket implements IBasket {
         this.basketList = ensureElement<HTMLElement>(".basket__list", this.basket);
         this.button = ensureElement<HTMLButtonElement>(".basket__button", this.basket);
         this.basketPrice = ensureElement<HTMLElement>(".basket__price", this.basket);
-        this.headerBasketButton = ensureElement<HTMLButtonElement>(".header__basket");
-        this.headerBasketCounter = ensureElement<HTMLElement>(".header__basket-counter");
+
+        this.headerBasketButton = ensureElement<HTMLButtonElement>(".header__basket", container);
+        this.headerBasketCounter = ensureElement<HTMLElement>(".header__basket-counter", container);
 
         // Установка обработчиков событий
         this.button.addEventListener("click", () => this.events.emit("order:open"));
@@ -61,7 +62,7 @@ export class Basket implements IBasket {
 
     // Рендеринг корзины
     render() {
-        this.title.textContent = "Корзина";
+        // this.title.textContent = "Корзина";
         return this.basket;
     }
 }

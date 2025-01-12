@@ -7,15 +7,13 @@ export class Modal implements IModal {
    contentElement: HTMLElement;
    closeButton: HTMLButtonElement;
    pageWrapper: HTMLElement;
-  // protected events: IEvents;
   
-
-  constructor(modalElement: HTMLElement | string, protected events: IEvents) {
+  constructor(modalElement: HTMLElement | string,  pageWrapper: HTMLElement, protected events: IEvents) {
     this.modalElement = ensureElement(modalElement);
     this.contentElement = ensureElement(".modal__content", this.modalElement);
     this.closeButton = ensureElement<HTMLButtonElement>(".modal__close", this.modalElement);
-    this.pageWrapper = ensureElement(".page__wrapper");
-    // this.events = events;
+    // this.pageWrapper = ensureElement(".page__wrapper");
+    this.pageWrapper = pageWrapper;
 
     this.closeButton.addEventListener('click', this.close.bind(this));
     this.modalElement.addEventListener('click', this.close.bind(this));
@@ -25,12 +23,14 @@ export class Modal implements IModal {
   open(): void {
     this.modalElement.classList.add("modal_active");
     this.events.emit("modal:open");
+    this.locked = true;
   }
 
   close(): void {
     this.modalElement.classList.remove("modal_active");
     this.setContent(null);
     this.events.emit("modal:close");
+    this.locked = false;
   }
 
   setContent(value: HTMLElement) {

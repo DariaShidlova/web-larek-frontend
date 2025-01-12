@@ -63,12 +63,10 @@ export interface IOrderFormManager {
     email: string;
     phone: string;
     address: string;
-    total: number;
-    items: string[];
-    setOrderAddress(field: string, value: string): void
-    validateOrder(): boolean;
-    setOrderData(field: string, value: string): void
-    validateContacts(): boolean;
+    setOrderAddress(value: string): void;
+    setOrderData(field: string, value: string): void;
+    setPaymentMethod(paymentMethod: string): void;
+    isFormValid(): boolean;
     returnOrderLot(): object;
 }
 
@@ -86,52 +84,16 @@ export interface IBasket {
     render(): HTMLElement;
 }
 
-export interface IBasketItem {
-    basketItem: HTMLElement;    
-    index: HTMLElement;         
-    title: HTMLElement;         
-    price: HTMLElement;         
-    buttonDelete: HTMLButtonElement; 
-    render(data: Product, item: number): HTMLElement; 
-}
-
-export interface ICard {
-    render(data: Product): HTMLElement;
-}
-
 export interface ICardPreview {
     text: HTMLElement;
     button: HTMLElement;
     render(data: Product): HTMLElement;
   }
 
-export interface IActions {
-    onClick: (event: MouseEvent) => void;
-}
-
 export interface IModal {
     open(): void;
     close(): void;
     render(): HTMLElement
-}
-
-export interface IContacts {
-    contactElement: HTMLElement;
-    inputAll: HTMLInputElement[];
-    buttonSubmit: HTMLButtonElement;
-    formErrors: HTMLElement;
-    // email: string;  
-    // phone: string;  
-    // valid: boolean;
-    render(): HTMLElement;
-}
-
-export interface IOrder {
-    formOrder: HTMLFormElement;
-    buttonAll: HTMLButtonElement[];
-    paymentSelection: string;
-    formErrors: HTMLElement;
-    render(): HTMLElement;
 }
 
 export interface ISuccess {
@@ -140,3 +102,37 @@ export interface ISuccess {
     button: HTMLButtonElement;
     render(total: number): HTMLElement;
 }
+
+// export interface IContacts {
+//     contactElement: HTMLElement;
+//     inputAll: HTMLInputElement[];
+//     buttonSubmit: HTMLButtonElement;
+//     formErrors: HTMLElement;
+//     // email: string;  
+//     // phone: string;  
+//     // valid: boolean;
+//     render(): HTMLElement;
+// }
+
+// export interface IOrder {
+//     formOrder: HTMLFormElement;
+//     buttonAll: HTMLButtonElement[];
+//     paymentSelection: string;
+//     formErrors: HTMLElement;
+//     render(): HTMLElement;
+// }
+// export interface IActions {
+//     onClick: (event: MouseEvent) => void;
+// }
+// export interface IBasketItem {
+//     basketItem: HTMLElement;    
+//     index: HTMLElement;         
+//     title: HTMLElement;         
+//     price: HTMLElement;         
+//     buttonDelete: HTMLButtonElement; 
+//     render(data: Product, item: number): HTMLElement; 
+// }
+
+// export interface ICard {
+//     render(data: Product): HTMLElement;
+// }

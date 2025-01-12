@@ -8,9 +8,9 @@ export class BasketManager implements IBasketManager {
     this.basket = [];
   }
 
-  set basketProducts(data: Product[]) {
-    this.basket = data;
-  }
+  // set basketProducts(data: Product[]) {
+  //   this.basket = data;
+  // }
 
   get basketProducts() {
     return this.basket;
@@ -19,13 +19,9 @@ export class BasketManager implements IBasketManager {
   getCounter() {
     return this.basket.length;
   }
-
+  
   getSumAllProducts() {
-    let sumAll = 0;
-    this.basket.forEach(item => {
-      sumAll = sumAll + item.price;
-    });
-    return sumAll;
+    return this.basket.reduce((sum, item) => sum + item.price, 0);
   }
 
   addToBasket(data: Product) {

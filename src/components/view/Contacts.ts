@@ -1,45 +1,29 @@
-import { IEvents } from "../base/events";
-import { ensureElement, ensureAllElements, cloneTemplate } from "../../utils/utils";
-import { IContacts } from "../../types";
+import { BaseForm } from "./BaseForm";
 
-export class Contacts implements IContacts {
-  contactElement: HTMLElement;
-  inputAll: HTMLInputElement[];
-  buttonSubmit: HTMLButtonElement;
-  formErrors: HTMLElement;  
+export class Contacts extends BaseForm {
+  private emailFilled = false;
+  private phoneFilled = false;
 
-  constructor(template: HTMLTemplateElement, protected events: IEvents) {
-    // Клонируем шаблон формы и ищем все необходимые элементы
-    this.contactElement = cloneTemplate(template);
-    this.inputAll = ensureAllElements('.form__input', this.contactElement) as HTMLInputElement[];
-    this.buttonSubmit = ensureElement('.button', this.contactElement) as HTMLButtonElement;
-    this.formErrors = ensureElement('.form__errors', this.contactElement);
-
-    // Добавляем обработчик на изменения ввода
-    this.inputAll.forEach(input => {
-      input.addEventListener('input', (event) => {
-        const target = event.target as HTMLInputElement;
-        const field = target.name;
-        const value = target.value;
-
-        this.events.emit(`contacts:changeInput`, { field: target.name, value: target.value });
-      });
-    });
-
-    // Обработчик отправки формы
-    this.contactElement.addEventListener('submit', (event: Event) => {
-      event.preventDefault();  // Останавливаем стандартную отправку формы
-      this.events.emit('success:open');
-    });
+  protected getEventNamespace(): string {
+    return "contacts";
   }
 
-  // Сеттер для кнопки отправки формы, управляет её состоянием
-  set validateContacts(value: boolean) {
-    this.buttonSubmit.disabled = !value;
+  protected handleSubmit(): void {
+    this.events.emit('success:open');
   }
 
-  // Метод для отображения формы
-  render(): HTMLElement {
-    return this.contactElement;
+  protected validateForm(): void {
+    this.isValid = this.emailFilled && this.phoneFilled;
+  }
+
+  set emailInput(email: string) {
+    this.emailFilled = email.trim().length > 0;
+    this.validateForm();
+  }
+
+  set phoneInput(phone: string) {
+    this.phoneFilled = phone.trim().length > 0;
+    this.validateForm();
   }
 }
+
