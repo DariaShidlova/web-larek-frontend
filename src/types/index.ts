@@ -59,15 +59,12 @@ export interface IBasketManager {
 }
 
 export interface IOrderFormManager {
-    payment: string;
-    email: string;
-    phone: string;
-    address: string;
-    setOrderAddress(value: string): void;
-    setOrderData(field: string, value: string): void;
-    setPaymentMethod(paymentMethod: string): void;
-    isFormValid(): boolean;
-    returnOrderLot(): object;
+    setOrderAddress(value: string): void; // Установка адреса
+    setOrderData(field: 'email' | 'phone', value: string): void; // Установка email или телефона
+    setPaymentMethod(paymentMethod: string): void; // Установка способа оплаты
+    isOrderValid(): boolean; // Проверка валидности данных заказа (адрес + способ оплаты)
+    isContactValid(): boolean; // Проверка валидности контактных данных (email + телефон)
+    getFormState():object
 }
 
 //Интерфейс для слоя view
@@ -77,9 +74,6 @@ export interface IBasket {
     basketList: HTMLElement;
     button: HTMLButtonElement;
     basketPrice: HTMLElement;
-    headerBasketButton: HTMLButtonElement;
-    headerBasketCounter: HTMLElement;
-    renderHeaderBasketCounter(value: number): void;
     renderSumAllProducts(sumAll: number): void;
     render(): HTMLElement;
 }
@@ -103,36 +97,3 @@ export interface ISuccess {
     render(total: number): HTMLElement;
 }
 
-// export interface IContacts {
-//     contactElement: HTMLElement;
-//     inputAll: HTMLInputElement[];
-//     buttonSubmit: HTMLButtonElement;
-//     formErrors: HTMLElement;
-//     // email: string;  
-//     // phone: string;  
-//     // valid: boolean;
-//     render(): HTMLElement;
-// }
-
-// export interface IOrder {
-//     formOrder: HTMLFormElement;
-//     buttonAll: HTMLButtonElement[];
-//     paymentSelection: string;
-//     formErrors: HTMLElement;
-//     render(): HTMLElement;
-// }
-// export interface IActions {
-//     onClick: (event: MouseEvent) => void;
-// }
-// export interface IBasketItem {
-//     basketItem: HTMLElement;    
-//     index: HTMLElement;         
-//     title: HTMLElement;         
-//     price: HTMLElement;         
-//     buttonDelete: HTMLButtonElement; 
-//     render(data: Product, item: number): HTMLElement; 
-// }
-
-// export interface ICard {
-//     render(data: Product): HTMLElement;
-// }

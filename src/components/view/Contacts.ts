@@ -1,29 +1,33 @@
 import { BaseForm } from "./BaseForm";
 
 export class Contacts extends BaseForm {
-  private emailFilled = false;
-  private phoneFilled = false;
-
   protected getEventNamespace(): string {
     return "contacts";
   }
 
   protected handleSubmit(): void {
-    this.events.emit('success:open');
+    if (this.getFormValidationState().isValid) {
+      this.events.emit('contacts:submit'); 
+    }
+  }
+  
+  protected getFormValidationState(): { isValid: boolean } {
+    const isValid = this.inputAll.every(input => input.value.length > 0); 
+    return { isValid };
   }
 
-  protected validateForm(): void {
-    this.isValid = this.emailFilled && this.phoneFilled;
-  }
+  render(): HTMLElement {
+    const emailInput = this.formElement.querySelector('input[name="email"]') as HTMLInputElement;
+    const phoneInput = this.formElement.querySelector('input[name="phone"]') as HTMLInputElement;
 
-  set emailInput(email: string) {
-    this.emailFilled = email.trim().length > 0;
-    this.validateForm();
-  }
+    emailInput.addEventListener('input', () => {
+      this.events.emit('contacts:setEmail', { email: emailInput.value });
+    });
 
-  set phoneInput(phone: string) {
-    this.phoneFilled = phone.trim().length > 0;
-    this.validateForm();
+    phoneInput.addEventListener('input', () => {
+      this.events.emit('contacts:setPhone', { phone: phoneInput.value });
+    });
+
+    return super.render();
   }
 }
-

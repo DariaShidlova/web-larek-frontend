@@ -20,7 +20,6 @@ export class ApiClient extends Api {
     );
   }
 
- 
   //отправляет POST-запрос на /order для создания заказа
   postOrderLot(order: OrderData): Promise<OrderDataResult> {
     return this.post(`/order`, order).then((data: OrderDataResult) => data);

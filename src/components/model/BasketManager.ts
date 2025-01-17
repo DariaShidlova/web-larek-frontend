@@ -1,17 +1,16 @@
 import { Product } from "../../types";
+import { IEvents } from "../base/events";
 import { IBasketManager } from '../../types/index'
 
 export class BasketManager implements IBasketManager {
   basket: Product[]; 
+  private events: IEvents;
 
-  constructor() {
+  constructor(events: IEvents) {
     this.basket = [];
+    this.events = events;
   }
-
-  // set basketProducts(data: Product[]) {
-  //   this.basket = data;
-  // }
-
+  
   get basketProducts() {
     return this.basket;
   }
@@ -26,16 +25,19 @@ export class BasketManager implements IBasketManager {
 
   addToBasket(data: Product) {
     this.basket.push(data);
+    this.events.emit('basket:updated', this.basket); 
   }
 
   removeFromBasket(item: Product) {
     const index = this.basket.indexOf(item);
     if (index >= 0) {
       this.basket.splice(index, 1);
+      this.events.emit('basket:updated', this.basket);
     }
   }
 
   clearBasket() {
-    this.basket = []
+    this.basket = [];
+    this.events.emit('basket:updated', this.basket);
   }
 }

@@ -27,7 +27,6 @@ export abstract class BaseForm {
     });
   }
 
-  // Обработчик отправки формы
   protected addSubmitListener(): void {
     this.formElement.addEventListener('submit', (event: Event) => {
       event.preventDefault();
@@ -35,22 +34,22 @@ export abstract class BaseForm {
     });
   }
 
-  // Проверка валидности формы (переопределяется в дочерних классах)
-  protected abstract validateForm(): void;
+  protected abstract getFormValidationState(): { isValid: boolean };
 
-  // Уникальная обработка отправки формы
   protected abstract handleSubmit(): void;
 
-  // Уникальное пространство имен для событий
   protected abstract getEventNamespace(): string;
 
-  // Сеттер для управления кнопкой отправки
   set isValid(value: boolean) {
     this.buttonSubmit.disabled = !value;
   }
 
-  // Метод для рендера
   render(): HTMLElement {
     return this.formElement;
+  }
+
+  protected validateForm(): void {
+    const { isValid } = this.getFormValidationState();
+    this.isValid = isValid;
   }
 }
