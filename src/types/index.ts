@@ -56,6 +56,7 @@ export interface IBasketManager {
     addToBasket(data: Product): void;
     removeFromBasket(item: Product): void;
     clearBasket(): void
+    isInBasket(id: string): boolean 
 }
 
 export interface IOrderFormManager {

@@ -3,8 +3,8 @@ import { ICardPreview, Product } from "../../types";
 import { IEvents } from "../base/events";
 
 export class ProductCardPreview extends Card implements ICardPreview {
-  text: HTMLElement;          
-  button: HTMLButtonElement;  
+  text: HTMLElement;
+  button: HTMLButtonElement;
 
   constructor(template: HTMLTemplateElement, protected events: IEvents) {
     super(template, () => this.handleAddToBasket());
@@ -14,12 +14,14 @@ export class ProductCardPreview extends Card implements ICardPreview {
 
   private handleAddToBasket(): void {
     if (!this.button.disabled) {
-      this.events.emit('card:addBasket'); 
+      this.events.emit('card:addBasket');
     }
   }
 
-  private getButtonLabel(data: Product): string {
-    return data.price ? "Купить" : "Не продается";
+  private getButtonLabel(data: Product, isInBasket: boolean): string {
+    if (data.price === null) return "Не продается";
+    if (isInBasket) return "В корзине";
+    return "Купить";
   }
 
   render(data: Product): HTMLElement {
@@ -29,10 +31,20 @@ export class ProductCardPreview extends Card implements ICardPreview {
     this.cardImage.alt = data.title;
     this.renderPrice(data.price);
     this.text.textContent = data.description;
-    
-    this.button.textContent = this.getButtonLabel(data);
-    this.button.disabled = data.price === null; 
-    return this.cardElement;
 
+    let isInBasket = false;
+
+    this.events.emit('basket:check', {
+      id: data.id,
+      callback: (result: boolean) => {
+        isInBasket = result;
+      },
+    });
+
+    this.button.textContent = this.getButtonLabel(data, isInBasket);
+    this.button.disabled = data.price === null || isInBasket;
+
+    return this.cardElement;
   }
 }
+

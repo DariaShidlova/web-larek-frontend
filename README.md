@@ -136,6 +136,7 @@ yarn build
 - `addToBasket(data: Product)`: добавляет товар в корзину.
 - `removeFromBasket(item: Product)`: удаляет товар из корзины.
 - `clearBasket()`: очищает корзину, удаляя все товары.
+- `isInBasket` - предназначен для проверки, находится ли товар с указанным id в корзине.
 ---
 
 #### Класс `OrderFormManager`
@@ -248,7 +249,7 @@ yarn build
 
 **Методы**:
 - `handleAddToBasket(): void` - проверяет активность кнопки добавления в корзину.
-- `getButtonLabel(data: Product): string` - метод для определения текста кнопки "Купить" в зависимости от наличия цены.
+- `getButtonLabel(data: Product): string` - метод для определения текста кнопки "Купить" в зависимости от наличия цены и добавления в корзину.
 - `render(data: Product): HTMLElement` - метод для рендеринга карточки товара с переданными данными.
 ---
 

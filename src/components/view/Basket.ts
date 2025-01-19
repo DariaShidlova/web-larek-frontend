@@ -1,7 +1,6 @@
 import { IBasket, Product } from "../../types";
 import { createElement, cloneTemplate, ensureElement, isEmpty } from "../../utils/utils";
 import { IEvents } from "../base/events";
-import { BasketItem } from "./BasketItem";
 
 export class Basket implements IBasket {
     basket: HTMLElement;
@@ -19,27 +18,8 @@ export class Basket implements IBasket {
         this.basketPrice = ensureElement<HTMLElement>(".basket__price", this.basket);
 
         this.button.addEventListener("click", () => this.events.emit("order:open"));
-
-        this.events.on('basket:updated', (basket: Product[]) => {
-        this.updateBasketView(basket);
-      });
   
         this.items = [];
-        
-    }
-    
-    private updateBasketView(basket: Product[]): void {
-        const items = basket.map((product, index) => {
-            const onDelete = () => {
-                this.events.emit('basket:remove', product);
-            };
-
-            const basketItem = new BasketItem(this.basket.querySelector('#card-basket') as HTMLTemplateElement, onDelete);
-            return basketItem.render(product, index + 1); 
-        });
-
-        this.items = items;
-        this.renderSumAllProducts(basket.reduce((sum, item) => sum + item.price, 0));
     }
 
     set items(items: HTMLElement[]) {

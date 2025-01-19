@@ -3,14 +3,14 @@ import { IEvents } from "../base/events";
 import { IBasketManager } from '../../types/index'
 
 export class BasketManager implements IBasketManager {
-  basket: Product[]; 
-  private events: IEvents;
+  basket: Product[];
+  events: IEvents;
 
   constructor(events: IEvents) {
     this.basket = [];
     this.events = events;
   }
-  
+
   get basketProducts() {
     return this.basket;
   }
@@ -18,14 +18,14 @@ export class BasketManager implements IBasketManager {
   getCounter() {
     return this.basket.length;
   }
-  
+
   getSumAllProducts() {
     return this.basket.reduce((sum, item) => sum + item.price, 0);
   }
 
   addToBasket(data: Product) {
     this.basket.push(data);
-    this.events.emit('basket:updated', this.basket); 
+    this.events.emit('basket:updated', this.basket);
   }
 
   removeFromBasket(item: Product) {
@@ -39,5 +39,9 @@ export class BasketManager implements IBasketManager {
   clearBasket() {
     this.basket = [];
     this.events.emit('basket:updated', this.basket);
+  }
+
+  isInBasket(id: string): boolean {
+    return this.basket.some((product) => product.id === id);
   }
 }

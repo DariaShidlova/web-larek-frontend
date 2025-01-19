@@ -84,25 +84,48 @@ events.on('card:addBasket', () => {
       basketManager.addToBasket(selectedCard);
       modal.close();
     }
-  });
+});
 
-// Подписка на обновление корзины
-events.on('basket:updated', (basket: Product[]) => {
-    page.renderHeaderBasketCounter(basket.length); // Обновление счетчика в хэдере
-    basketView.render(); // Ререндеринг содержимого корзины
-  });
+// events.on('basket:check', ({ id, callback }: { id: string; callback: (result: boolean) => void }) => {
+//   const isInBasket = basketManager.isInBasket(id);
+//   callback(isInBasket);
+// });
+
+// Обработка события basket:check
+events.on('basket:check', ({ id, callback }: { id: string; callback: (result: boolean) => void }) => {
+  const isInBasket = basketManager.isInBasket(id);
+  callback(isInBasket);
+});
+
+
+
 
 // Открытие корзины при клике на значок корзины
 events.on('basket:open', () => {
-    modal.setContent(basketView.render());
-    modal.open();
-});
+  // Проверяем, есть ли товары в корзине
+  const basketItems = basketManager.basketProducts;
+  
+  // Если товары есть, отображаем их
+  if (basketItems.length > 0) {
+    const basketItemsHtml = basketItems.map((item, index) => {
+      const basketItemView = new BasketItem(cardBasketTemplate, () => {
+        basketManager.removeFromBasket(item);
+        events.emit('basket:open'); // Перерисовываем корзину после удаления товара
+      });
+      return basketItemView.render(item, index + 1);
+    });
 
-events.on('basket:updated', (basket: Product[]) => {
-    // Ререндер корзины
-    basketView.render();
-    // Обновление счётчика товаров в хэдере
-    page.renderHeaderBasketCounter(basket.length);
+    basketView.items = basketItemsHtml; // Отображаем товары в корзине
+    basketView.renderSumAllProducts(basketManager.getSumAllProducts());
+  } else {
+    // Если корзина пуста
+    basketView.items = [];
+    basketView.renderSumAllProducts(0);
+  }
+  
+  // Открытие модального окна корзины
+  modal.setContent(basketView.render());
+  modal.open();
 });
 
 //очищает корзину
@@ -127,6 +150,11 @@ events.on('order:setPaymentMethod', ({ paymentMethod }: { paymentMethod: string 
     orderFormManager.setOrderData('phone', phone);
   });
   
+   // Подписка на изменения состояния валидации
+   events.on('order:stateChange', ({ isValid }: { isValid: boolean }) => {
+  isValid = isValid;
+  });
+
   // Открытие модальных окон
   events.on('order:open', () => {
     modal.setContent(orderView.render());
@@ -178,4 +206,3 @@ events.on("modal:open", () => {
 events.on("modal:close", () => {
   page.locked = false;
 });
-

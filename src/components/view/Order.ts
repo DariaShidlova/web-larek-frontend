@@ -1,3 +1,4 @@
+import { IEvents } from "../base/events";
 import { BaseForm } from "./BaseForm";
 
 export class Order extends BaseForm {
@@ -5,34 +6,34 @@ export class Order extends BaseForm {
     return "order";
   }
 
-  protected handleSubmit(): void {
-    this.events.emit('contacts:open');
-  }
+  constructor(template: HTMLTemplateElement, events: IEvents) {
+    super(template, events);
 
-  protected getFormValidationState(): { isValid: boolean } {
-    const addressInput = this.formElement.querySelector('input[name="address"]') as HTMLInputElement;
-    const paymentButtonActive = this.buttonAll.some(button => button.classList.contains('button_alt-active'));
-    
-    const isValid = addressInput.value.trim().length > 0 && paymentButtonActive;
-    return { isValid };
-  }
-
-  render(): HTMLElement {
+    // Устанавливаем слушатели событий для кнопок
     this.buttonAll.forEach(button => {
       button.addEventListener('click', () => {
         const paymentMethod = button.getAttribute('name') || '';
         this.events.emit('order:setPaymentMethod', { paymentMethod });
         this.buttonAll.forEach(btn => btn.classList.toggle('button_alt-active', btn === button));
-        this.validateForm();
       });
     });
 
+    // Устанавливаем слушатель события для поля адреса
     const addressInput = this.formElement.querySelector('input[name="address"]') as HTMLInputElement;
     addressInput.addEventListener('input', () => {
       this.events.emit('order:setAddress', { address: addressInput.value });
-      this.validateForm();
     });
+  }
 
+  protected handleSubmit(): void {
+    this.events.emit('contacts:open');
+  }
+
+  protected getFormValidationState(): { isValid: boolean } {
+    return { isValid: true }; // Минимальная реализация
+  }
+  
+  render(): HTMLElement {
     return super.render();
   }
 }
