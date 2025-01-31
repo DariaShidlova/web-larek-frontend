@@ -1,5 +1,6 @@
 import { IEvents } from "../base/events";
 import { ensureElement, ensureAllElements, cloneTemplate } from "../../utils/utils";
+import { FormErrors } from "../../types";
 
 export abstract class BaseForm {
   formElement: HTMLElement;
@@ -19,10 +20,20 @@ export abstract class BaseForm {
     this.addSubmitListener();
   }
 
+  displayErrors(errors: FormErrors): void {
+    this.formErrors = ensureElement('.form__errors', this.formElement);
+    this.formErrors.innerHTML = '';
+    Object.values(errors).forEach((error) => {
+      const errorElement = document.createElement('p');
+      errorElement.textContent = error;
+      this.formErrors.appendChild(errorElement);
+    });
+  }
+
   protected addInputListeners(): void {
     this.inputAll.forEach(input => {
       input.addEventListener('input', () => {
-        this.validateForm();
+        this.onInputChange();
       });
     });
   }
@@ -33,8 +44,6 @@ export abstract class BaseForm {
       this.handleSubmit();
     });
   }
-
-  protected abstract getFormValidationState(): { isValid: boolean };
 
   protected abstract handleSubmit(): void;
 
@@ -48,8 +57,8 @@ export abstract class BaseForm {
     return this.formElement;
   }
 
-  protected validateForm(): void {
-    const { isValid } = this.getFormValidationState();
-    this.isValid = isValid;
+  protected onInputChange(): void {
+    this.events.emit(`${this.getEventNamespace()}:changed`);
   }
 }
+

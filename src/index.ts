@@ -15,7 +15,7 @@ import { ProductCardPreview } from './components/view/ProductCardPreview';
 import { Success } from './components/view/Success';
 import { API_URL, CDN_URL } from './utils/constants';
 import { ensureElement } from './utils/utils';
-import { OrderData, Product } from './types';
+import { FormErrors, OrderData, Product } from './types';
 
 const events = new EventEmitter();
 
@@ -86,19 +86,11 @@ events.on('card:addBasket', () => {
     }
 });
 
-// events.on('basket:check', ({ id, callback }: { id: string; callback: (result: boolean) => void }) => {
-//   const isInBasket = basketManager.isInBasket(id);
-//   callback(isInBasket);
-// });
-
 // Обработка события basket:check
 events.on('basket:check', ({ id, callback }: { id: string; callback: (result: boolean) => void }) => {
   const isInBasket = basketManager.isInBasket(id);
   callback(isInBasket);
 });
-
-
-
 
 // Открытие корзины при клике на значок корзины
 events.on('basket:open', () => {
@@ -152,18 +144,32 @@ events.on('order:setPaymentMethod', ({ paymentMethod }: { paymentMethod: string 
   
    // Подписка на изменения состояния валидации
    events.on('order:stateChange', ({ isValid }: { isValid: boolean }) => {
-  isValid = isValid;
+    orderView.isValid = isValid;
+  });
+  
+  events.on('contacts:stateChange', ({ isValid }: { isValid: boolean }) => {
+    contactsView.isValid = isValid;
   });
 
-  // Открытие модальных окон
+  events.on('order:validationErrors', (errors: FormErrors) => {
+    orderView.displayErrors(errors);
+  });
+  
+  events.on('contacts:validationErrors', (errors: FormErrors) => {
+    contactsView.displayErrors(errors);
+  });
+
+// Открытие модальных окон
   events.on('order:open', () => {
     modal.setContent(orderView.render());
     modal.open();
+    orderFormManager.validateOrder(); 
   });
   
   events.on('contacts:open', () => {
     modal.setContent(contactsView.render());
     modal.open();
+    orderFormManager.validateContacts(); 
   });
 
  // Подписка на событие отправки формы контактов

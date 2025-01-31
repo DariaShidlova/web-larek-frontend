@@ -28,10 +28,6 @@ export class Order extends BaseForm {
   protected handleSubmit(): void {
     this.events.emit('contacts:open');
   }
-
-  protected getFormValidationState(): { isValid: boolean } {
-    return { isValid: true }; // Минимальная реализация
-  }
   
   render(): HTMLElement {
     return super.render();

@@ -6,11 +6,16 @@ export class OrderFormManager implements IOrderFormManager {
   private email = '';
   private phone = '';
   private address = '';
+  private errors: FormErrors = {};
 
-  constructor(protected events: IEvents) {}
+  constructor(protected events: IEvents) {
+    this.validateOrder();
+    this.validateContacts();
+  }
 
   setOrderAddress(value: string): void {
     this.address = value.trim();
+    this.validateOrder();
     this.updateOrderState();
   }
 
@@ -20,12 +25,32 @@ export class OrderFormManager implements IOrderFormManager {
     } else if (field === 'phone') {
       this.phone = value.trim();
     }
+    this.validateContacts();
     this.updateContactState();
   }
 
   setPaymentMethod(paymentMethod: string): void {
     this.payment = paymentMethod;
     this.updateOrderState();
+  }
+
+  validateOrder(): void {
+    this.errors = {};
+    if (!this.address) {
+      this.errors.address = 'Введите адрес доставки';
+    }
+    this.events.emit('order:validationErrors', this.errors);
+  }
+
+  validateContacts(): void {
+    this.errors = {};
+    if (!this.email) {
+      this.errors.email = 'Введите email';
+    }
+    if (!this.phone) {
+      this.errors.phone = 'Введите номер телефона';
+    }
+    this.events.emit('contacts:validationErrors', this.errors);
   }
 
   isOrderValid(): boolean {
@@ -35,17 +60,15 @@ export class OrderFormManager implements IOrderFormManager {
   isContactValid(): boolean {
     return !!this.email && !!this.phone;
   }
-
+  
   updateOrderState(): void {
-    const isValid = this.isOrderValid();
-    this.events.emit('order:stateChange', { isValid });
+    this.events.emit('order:stateChange', { isValid: this.isOrderValid() });
   }
 
   updateContactState(): void {
-    const isValid = this.isContactValid();
-    this.events.emit('contacts:stateChange', { isValid });
+    this.events.emit('contacts:stateChange', { isValid: this.isContactValid() });
   }
-
+ 
   getFormState(): {
     isOrderValid: boolean;
     isContactValid: boolean;

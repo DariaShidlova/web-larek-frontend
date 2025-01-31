@@ -1,33 +1,35 @@
+import { IEvents } from "../base/events";
 import { BaseForm } from "./BaseForm";
 
 export class Contacts extends BaseForm {
+  private emailInput: HTMLInputElement;
+  private phoneInput: HTMLInputElement;
+
   protected getEventNamespace(): string {
     return "contacts";
   }
 
-  protected handleSubmit(): void {
-    if (this.getFormValidationState().isValid) {
-      this.events.emit('contacts:submit'); 
-    }
+  constructor(template: HTMLTemplateElement, events: IEvents) {
+    super(template, events);
+
+    this.emailInput = this.formElement.querySelector('input[name="email"]') as HTMLInputElement;
+    this.phoneInput = this.formElement.querySelector('input[name="phone"]') as HTMLInputElement;
+
+    this.emailInput.addEventListener('input', () => {
+      this.events.emit('contacts:setEmail', { email: this.emailInput.value });
+    });
+
+    this.phoneInput.addEventListener('input', () => {
+      this.events.emit('contacts:setPhone', { phone: this.phoneInput.value });
+    });
   }
-  
-  protected getFormValidationState(): { isValid: boolean } {
-    const isValid = this.inputAll.every(input => input.value.length > 0); 
-    return { isValid };
+
+  protected handleSubmit(): void {
+    this.events.emit('contacts:submit');
   }
 
   render(): HTMLElement {
-    const emailInput = this.formElement.querySelector('input[name="email"]') as HTMLInputElement;
-    const phoneInput = this.formElement.querySelector('input[name="phone"]') as HTMLInputElement;
-
-    emailInput.addEventListener('input', () => {
-      this.events.emit('contacts:setEmail', { email: emailInput.value });
-    });
-
-    phoneInput.addEventListener('input', () => {
-      this.events.emit('contacts:setPhone', { phone: phoneInput.value });
-    });
-
     return super.render();
   }
 }
+
