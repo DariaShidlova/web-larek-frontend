@@ -176,6 +176,7 @@ yarn build
 - `addInputListeners(): void` - добавляет слушатели событий input ко всем полям ввода
 - `addSubmitListener(): void` - добавляет слушатель события submit для формы, предотвращает стандартное поведение отправки формы.
 - `getFormValidationState()` - определяет состояние валидации формы.
+- `displayErrors(): void` - выводит ошибки на форме.
 - `handleSubmit(): void` - определяет логику обработки отправки формы.
 - `getEventNamespace(): string` - определяет уникальное пространство имен для событий.
 - `set isValid(value: boolean)` - сеттер для управления состоянием кнопки отправки.
